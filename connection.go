@@ -27,7 +27,7 @@ type connection struct {
 	pongMutex sync.Mutex
 	lastPong  time.Time
 
-	messageBus chan sharedMessage
+	messageBus chan SharedMessage
 
 	doReconnect bool
 
@@ -271,7 +271,7 @@ func (c *connection) parseMessage(b []byte) error {
 		if err != nil {
 			return err
 		}
-		c.messageBus <- sharedMessage{
+		c.messageBus <- SharedMessage{
 			Topic:   msg.Data.Topic,
 			Message: d,
 		}
@@ -280,7 +280,7 @@ func (c *connection) parseMessage(b []byte) error {
 		if err != nil {
 			return err
 		}
-		c.messageBus <- sharedMessage{
+		c.messageBus <- SharedMessage{
 			Topic:   msg.Data.Topic,
 			Message: d,
 		}

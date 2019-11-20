@@ -33,7 +33,7 @@ var (
 	DefaultHost = "wss://pubsub-edge.twitch.tv"
 )
 
-type messageBusType chan sharedMessage
+type messageBusType chan SharedMessage
 
 // Client is the client that connects to Twitch's pubsub servers
 type Client struct {
@@ -45,18 +45,18 @@ type Client struct {
 
 	topics *topicManager
 
-	messageBus chan sharedMessage
+	messageBus chan SharedMessage
 
 	quitChannel   chan struct{}
 	customHandler CustomHandler
 }
 
-type CustomHandler func(*sharedMessage)
+type CustomHandler func(SharedMessage)
 
 // NewClient creates a client struct and fills it in with some default values
 func NewClient(host string, customHandler CustomHandler) *Client {
 	c := &Client{
-		messageBus:    make(chan sharedMessage, messageBusBufferLength),
+		messageBus:    make(chan SharedMessage, messageBusBufferLength),
 		quitChannel:   make(chan struct{}),
 		customHandler: customHandler,
 		topics:        newTopicManager(),
@@ -122,7 +122,7 @@ func (c *Client) Start() error {
 				c.onBitsEvent(channelID, d)
 			default:
 				if c.customHandler != nil {
-					c.customHandler(&msg)
+					c.customHandler(msg)
 					continue
 				}
 				log.Println("unknown message in message bus")

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-type sharedMessage struct {
+type SharedMessage struct {
 	Topic   string
 	Message interface{}
 }
