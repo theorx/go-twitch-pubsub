@@ -47,16 +47,19 @@ type Client struct {
 
 	messageBus chan sharedMessage
 
-	quitChannel chan struct{}
+	quitChannel   chan struct{}
+	customHandler CustomHandler
 }
 
-// NewClient creates a client struct and fills it in with some default values
-func NewClient(host string) *Client {
-	c := &Client{
-		messageBus:  make(chan sharedMessage, messageBusBufferLength),
-		quitChannel: make(chan struct{}),
+type CustomHandler func(*sharedMessage)
 
-		topics: newTopicManager(),
+// NewClient creates a client struct and fills it in with some default values
+func NewClient(host string, customHandler CustomHandler) *Client {
+	c := &Client{
+		messageBus:    make(chan sharedMessage, messageBusBufferLength),
+		quitChannel:   make(chan struct{}),
+		customHandler: customHandler,
+		topics:        newTopicManager(),
 	}
 
 	c.connectionManager = &connectionManager{
@@ -118,6 +121,10 @@ func (c *Client) Start() error {
 				}
 				c.onBitsEvent(channelID, d)
 			default:
+				if c.customHandler != nil {
+					c.customHandler(&msg)
+					continue
+				}
 				log.Println("unknown message in message bus")
 			}
 		case <-c.quitChannel:
