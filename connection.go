@@ -3,6 +3,7 @@ package twitchpubsub
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
@@ -264,6 +265,8 @@ func (c *connection) parseMessage(b []byte) error {
 	}
 
 	innerMessageBytes := []byte(msg.Data.Message)
+
+	log.Println("Message", string(innerMessageBytes))
 
 	switch getMessageType(msg.Data.Topic) {
 	case messageTypeModerationAction:
